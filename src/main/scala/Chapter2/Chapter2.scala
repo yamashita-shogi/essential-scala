@@ -716,3 +716,462 @@ object chapter23 {
     }
   }
 }
+
+object chapter24 {
+
+  /**
+    * ## 2.4 Object Literals
+    * これまで、IntやStringなどの組み込み型のオブジェクトを作成し、それらを組み合わせて式を作る方法を見てきました。
+    * このセクションでは、オブジェクトリテラルを使って独自のオブジェクトを作成する方法を説明します。
+    *
+    * オブジェクトリテラルを記述する際には、宣言を使用しますが、これは式とは異なる種類のプログラムです。
+    * 宣言は、値として評価されることはありません。代わりに、名前と値を関連付けます。この名前は、他のコードでその値を参照するために使用されます。
+    *
+    * 空のオブジェクトを宣言するには次のようにします。
+    */
+  object Test {}
+
+  /**
+    * これは式ではなく、値として評価されません。
+    * むしろ、名前(Test)を値(空のオブジェクト)に結びつけています。
+    *
+    * Testという名前を結びつけると、それを式の中で使うことができ、宣言したオブジェクトとして評価されます。
+    * 最も単純な式は、名前だけで、それ自体が値として評価されるものです。
+    */
+  Test
+  // res0: Test.type = Test$@779732fb
+
+  /**
+    * この表現は、123 や "abc" といったリテラルを記述するのと同じです。
+    * オブジェクトの型はTest.typeとして報告されていることに注意してください。
+    * これは、これまでに見たことのある型とは異なり、このオブジェクトのためだけに作られた新しい型で、シングルトン型と呼ばれます。このタイプの値を他に作ることはできません。
+    *
+    * 空のオブジェクトはあまり便利ではありません。オブジェクト宣言のボディ（中括弧の間）には、式を入れることができます。
+    * しかし、より一般的なのは、メソッドやフィールド、あるいはさらに多くのオブジェクトを宣言するような宣言を記述することです。
+    */
+  /**
+    * ---
+    *
+    * **オブジェクト宣言の構文**
+    * オブジェクトを宣言する構文は次のとおりです。
+    */
+//  object name {
+//    declarationOrExpression ...
+//  }
+  /**
+    * ここで
+    * - name は、オブジェクトの名前です。
+    * - オプションのdeclarationOrExpressionsは、宣言または式です。
+    *
+    * ---
+    */
+  /**
+    * それでは、メソッドとフィールドの宣言方法を見てみましょう。
+    */
+  object chapter241 {
+
+    /**
+      * ### 2.4.1 Methods
+      * オブジェクトとのやりとりはメソッドを介して行われるので、メソッドを持つオブジェクトを作ってみましょう。
+      */
+    object Test2 {
+      def name: String = "Probably the best object ever"
+    }
+
+    /**
+      * ここでは、nameというメソッドを作成しています。これを通常の方法で呼び出すことができます。
+      */
+    Test2.name
+    // res1: String = Probably the best object ever
+
+    /**
+      * ここでは、より複雑なメソッドを持つオブジェクトを紹介します。
+      */
+    object Test3 {
+      def hello(name: String) =
+        "Hello " + name
+    }
+    Test3.hello("Noel")
+    // res2: String = Hello Noel
+
+    /**
+      * ---
+      *
+      * **メソッド宣言の構文**
+      * メソッドを宣言する構文は次のとおりです。
+      */
+//    def name(parameter: type, ...): resultType =
+//      bodyExpression
+
+    /**
+      * or
+      */
+//    def name: resultType =
+//      bodyExpression
+
+    /**
+      * ここで
+      * - name は、メソッドの名前です。
+      * - optional parameters は、メソッドのパラメータに与えられた名前です。
+      * - type は、メソッドのパラメータのタイプです。
+      * - オプションの resultType は、メソッドの結果のタイプです。
+      * - bodyExpression は、メソッドの呼び出しが評価される式です。
+      *
+      * メソッドのパラメータは任意ですが、メソッドにパラメータがある場合はその型を指定する必要があります。
+      * 結果の型は任意ですが、定義しておくと（機械でチェックされた！）ドキュメントとして役立つので良い習慣です。
+      *
+      * 引数という用語は、パラメータと同じ意味で使われることがあります。
+      *
+      * ---
+      */
+
+    /**
+    * ---
+    *
+    * **リターンは暗黙の了解**
+    * メソッドの戻り値は、ボディを評価して決定されます。Javaのようにreturnを記述する必要はありません。
+    *
+    * ---
+    */
+  }
+
+  object chapter242 {
+
+    /**
+      * ### 2.4.2 Fields
+      * オブジェクトは、フィールドと呼ばれる他のオブジェクトを含むことができます。
+      * フィールドを導入するには、defに似たvalやvarというキーワードを使います。
+      */
+    object Test4 {
+      val name = "Noel"
+      def hello(other: String): String =
+        name + " says hi to " + other
+    }
+    Test4.hello("Dave")
+    // res3: String = Noel says hi to Dave
+
+    /**
+      * ---
+      *
+      * **フィールド宣言の構文**
+      * フィールドを宣言する構文は以下の通りです。
+      */
+//    val name: type = valueExpression
+    // or
+//    var name: type = valueExpression
+
+    /**
+      * ここで
+      * - nameは，フィールドの名前です．
+      * - オプションの型宣言では、フィールドの型を指定します。
+      * - valueExpression は、name にバインドされているオブジェクトとして評価されます。
+      *
+      * ---
+      */
+
+    /**
+    * valを使用すると、不変的なフィールドを定義し、名前にバインドされた値を変更することはできません。
+    * varフィールドはmutableなので、束縛された値を変更することができます。
+    *
+    * Scalaのプログラマーは、可能な限り不変のフィールドを使うことを好みます。
+    * アプリケーションコードの中で時々ミュータブルフィールドを作成することは間違いありませんが、このコースのほとんどではvarを使わないようにしています。
+    */
+  }
+
+  object chapter243 {
+
+    /**
+      * ### 2.4.3 Methods versus fields
+      * 引数のないメソッドがあっても同じように機能するのに、なぜフィールドが必要なのかと思われるかもしれません。
+      * その違いは微妙で、フィールドは値に名前を与えるのに対し、メソッドは値を生成する計算に名前を与えます。
+      *
+      * ここでは、その違いを示すオブジェクトを紹介します。
+      */
+    object Test7 {
+      val simpleField = {
+        println("Evaluating simpleField")
+        42
+      }
+      def noParameterMethod = {
+        println("Evaluating noParameterMethod")
+        42
+      }
+    }
+
+    /**
+      * ここでは、コンソールに何かを表示するためにprintln式を使い、式をグループ化するためにブロック式（{と}で囲まれた式）を使っています。
+      * ブロック式については、次のセクションで詳しく説明します。
+      *
+      * コンソールには、オブジェクトを定義したと表示されていますが、println式は実行されていません。
+      * これは、遅延読み込みと呼ばれる Scala と Java の癖によるものです。
+      *
+      * オブジェクトやクラス（後で説明します）は、他のコードから参照されるまでロードされません。
+      * これが、Scalaが単純な "Hello world!"アプリを実行するために、標準ライブラリ全体をメモリにロードするのを防ぐ理由です。
+      *
+      * 式の中でTest7を参照することで，Scalaにオブジェクトのボディを評価させてみましょう．
+      */
+    Test7
+    // Evaluating simpleField
+    // res4: Test7.type = Test7$@da0141b
+
+    /**
+      * オブジェクトが最初に読み込まれると，Scala はその定義を実行し，各フィールドの値を計算します．
+      * この結果、コードには副作用として「Evaluating simpleField」と表示されます。
+      *
+      * フィールドの本体式は一度だけ実行され、その後、最終的な値がオブジェクトに格納されます。
+      * 式は二度と評価されません。以下の println 出力がないことに注意してください。
+      */
+    Test7.simpleField
+    // res5: Int = 42
+
+    Test7.simpleField
+    // res6: Int = 42
+
+    /**
+      * 一方、メソッドのボディは、メソッドを呼び出すたびに評価されます。
+      * 以下のprintln出力が繰り返されていることに注目してください。
+      */
+    Test7.noParameterMethod
+    // Evaluating noParameterMethod
+    // res7: Int = 42
+
+    Test7.noParameterMethod
+    // Evaluating noParameterMethod
+    // res8: Int = 42
+  }
+
+  object chapter244 {
+
+    /**
+      * ### 2.4.4 Take home points
+      * このセクションでは、独自のオブジェクトを作成し、メソッドやフィールドを与え、式の中でオブジェクトを参照してきました。
+      * オブジェクトを宣言するための構文を見てみましょう。
+      */
+//    object name {
+//      declarationOrExpression ...
+//    }
+    /**
+      * メソッドを宣言するための
+      */
+//    def name(parameter: type, ...): resultType = bodyExpression
+
+    /**
+      * と、フィールドを宣言するための
+      */
+//    val name = valueExpression
+//    var name = valueExpression
+
+    /**
+    * これらはすべて宣言であり、名前と値を結びつけるものです。
+    * 宣言は式とは異なります。宣言は値として評価されず、型も持ちません。
+    * また、メソッドとフィールドの違いを見てきましたが、フィールドはオブジェクト内に格納された値を指し、メソッドは値を生成する計算を指します。
+    */
+  }
+
+  object chapter245 {
+
+    /**
+      * ### 2.4.5 Exercises
+      */
+    object chapter2451 {
+
+      /**
+        * #### 2.4.5.1 Cat-o-matique
+        */
+      /**
+        * 下の表は、3匹の猫の名前、色、好きな食べ物を示しています。
+        * それぞれの猫に対してオブジェクトを定義してください。(経験豊富なプログラマーの方へ：まだクラスについては扱っていません)
+        */
+      object Oswald {
+        val Colour = "Black"
+        val Food = "Milk"
+      }
+      object Henderson {
+        val Colour = "Ginger"
+        val Food = "Chips"
+      }
+      object Quentin {
+        val Colour = "Tabby and white"
+        val Food = "Curry"
+      }
+    }
+
+    object chapter2452 {
+
+      /**
+        * #### 2.4.5.2 Square Dance!
+        */
+      object calc {
+        def square(d: Double): Double = d * d
+        def cube() = ???
+      }
+
+      /**
+        * 模範
+        */
+//      object calc {
+//        def square(x: Double) = x * x
+//        def cube(x: Double) = x * square(x)
+//      }
+    }
+
+    object chapter2453 {
+
+      /**
+        * #### 2.4.5.3 Precise Square Dance!
+        */
+      /**
+        * 前のエクササイズからcalcをコピー＆ペーストして、DoubleだけでなくIntsでも動作するように一般化したcalc2を作成します。
+        * Javaの経験があれば、これはかなり簡単なはずです。そうでない場合は、以下の解決策を読んでください。
+        */
+      /**
+        * 模範
+        */
+      object calc2 {
+        def square(value: Double) = value * value
+        def cube(value: Double) = value * square(value)
+
+        def square(value: Int) = value * value
+        def cube(value: Int) = value * square(value)
+      }
+
+      /**
+        * "オーバーロード "されたメソッドとは、異なる引数の型に対して何度も定義されたものです。
+        * オーバーロードされたメソッドタイプを呼び出すとき、Scalaは引数のタイプを見て、どのバリアントが必要かを自動的に判断します。
+        */
+//      calc2.square(1.0) // calls the `Double` version of `square`
+//      // res11: Double = 1.0
+//
+//      calc2.square(1)   // calls the `Int` version `square`
+//      // res12: Int = 1
+
+      /**
+        * Scalaのコンパイラは，低精度で高精度を必要とする場合，数値型間の自動変換を挿入することができます。
+        * 例えば，calc.square(2)と書いた場合，コンパイラはcalc.squareの唯一のバージョンがDoubleを取ることを判断し，calc.square(2.toDouble)を意味していると自動的に推測します。
+        *
+        * 高精度から低精度への逆方向の変換は、丸め誤差が発生する可能性があるため、自動的には処理されません。
+        * 例えば、以下のコードは、xがIntで本体の式がDoubleなので、コンパイルできません（試してみてください）。
+        */
+//      val x: Int = calc.square(2) // compile error
+//      // <console>:13: error: type mismatch;
+//      //  found   : Double
+//      //  required: Int
+//      //        val x: Int = calc.square(2) // compile error
+//      //                                ^
+      /**
+        * この問題を回避するために、DoubleのtoIntメソッドを手動で使用することができます。
+        */
+//      val x: Int = calc.square(2).toInt // toInt rounds down
+//      // x: Int = 4
+
+      /**
+      * ---
+      * **ストリングコンカチネーションの危険性**
+      * Javaと同様の動作を維持するために、Scalaは必要に応じてあらゆるオブジェクトを自動的にStringに変換します。
+      * これは、println("a" + 1) のような記述を容易にするためで、Scala は自動的に println("a" + 1.toString) と書き換えます。
+      *
+      * 文字列の連結と数値の加算が同じ+メソッドを共有していることで、予期せぬバグが発生することがありますので、ご注意ください。
+      *
+      * ---
+      */
+    }
+
+    object chapter2454 {
+
+      /**
+        * #### 2.4.5.4 Order of evaluation
+        */
+      /**
+        * コンソールに入力すると、次のプログラムは何を出力し、最終的な式の型と値は何ですか。
+        * それぞれのフィールドやメソッドの型、依存関係、評価の仕方などをよく考えてください。
+        */
+      object argh {
+        def a = {
+          println("a")
+          1
+        }
+
+        val b = {
+          println("b")
+          a + 2
+        }
+
+        def c = {
+          println("c")
+          a
+          b + "c"
+        }
+      }
+
+      argh.c + argh.b + argh.a
+
+      /**
+        * 模範
+        */
+      /**
+        * これで解決です。
+        */
+      argh.c + argh.b + argh.a
+      // b
+      // a
+      // c
+      // a
+      // a
+      // res13: String = 3c31
+
+      /**
+      * 評価の全順序は以下の通りです。
+      *
+      - プログラムの最後にメインサムを計算しますが、これが...
+        - argh` をロードし、...
+          - argh` のすべてのフィールドを計算し、それを...
+            - b` を計算し、それは...
+              - b "を印字する。
+              - a + 2` を評価し、...
+                - a` を呼び出し、それは...
+                  - 印字 `"a"` を出力する。
+                  - 戻り値は `1` です。
+                - 戻り値： `1 + 2` です。
+              - 値 `3` を `b` に格納する。
+        - `argh.c` を呼び出すと...
+          - 印刷 `"c"` を実行する。
+          - a` を評価する。
+            - a "を印刷する。
+            - 戻り値は `1` - これは捨てます。
+          - b + "c"` を評価し、以下のようになります。
+            - 値 `3` を `b` から取得します。
+              - 値 `"c"` を取得します。
+              - を評価し、それが実際に文字列の連結を参照していると判断し、`3` を変換します。
+                を評価し、`3` を `"3"` に変換します。
+              - 文字列``"3c"`を返す。
+        - `argh.b` を呼び出し、以下の処理を行います。
+          - b` から値 `3` を取得する。
+        - 最初の `+` を評価し、それが実際に文字列の連結を参照していると判断して
+          実際には文字列の連結を指していると判断し、`"3c3"`を出力します。
+        - `argh.a` を呼び出し、それは...
+          - a"`を出力する。
+          - 戻り値は `1` です。
+        - 最初の `+` を評価し、実際には文字列の連結を参照していると判断して、 `1` を返します。
+          実際には文字列の連結を指していると判断し、`"3c31"`を返します。
+      *
+      * ふう。こんなに簡単なコードなのに、ずいぶんと多いですね。
+      */
+    }
+
+    object chapter2455 {
+
+      /**
+      * firstNameとlastNameというフィールドを持つpersonというオブジェクトを定義します。
+      * alienという2つ目のオブジェクトを定義します。
+      * このオブジェクトにはgreetというメソッドがあり、personをパラメータとして受け取り、personのfirstNameを使ってgreetingを返します。
+      *
+      * greet メソッドの型は何ですか?
+      * このメソッドを使って他のオブジェクトに挨拶することはできますか？
+      */
+    }
+  }
+
+  def main(args: Array[String]): Unit = {
+    println("chapter24")
+  }
+}
