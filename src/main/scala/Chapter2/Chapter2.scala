@@ -1161,17 +1161,444 @@ object chapter24 {
     object chapter2455 {
 
       /**
-      * firstNameとlastNameというフィールドを持つpersonというオブジェクトを定義します。
-      * alienという2つ目のオブジェクトを定義します。
-      * このオブジェクトにはgreetというメソッドがあり、personをパラメータとして受け取り、personのfirstNameを使ってgreetingを返します。
+        * firstNameとlastNameというフィールドを持つpersonというオブジェクトを定義します。
+        * alienという2つ目のオブジェクトを定義します。
+        * このオブジェクトにはgreetというメソッドがあり、personをパラメータとして受け取り、personのfirstNameを使ってgreetingを返します。
+        *
+        * greet メソッドの型は何ですか?
+        * このメソッドを使って他のオブジェクトに挨拶することはできますか？
+        */
+//      object person {
+//        val firstName = "aaa"
+//        val lastName = "bbb"
+//      }
+//
+//      object alien {
+//        def greet(p: person) = s"hi ${p.firstName}"
+//      }
+
+      /**
+        * 模範
+        */
+      object person {
+        val firstName = "Dave"
+        val lastName = "Gurnell"
+      }
+
+      object alien {
+        def greet(p: person.type) =
+          "Greetings, " + p.firstName + " " + p.lastName
+      }
+
+      alien.greet(person)
+      // res15: String = Greetings, Dave Gurnell
+
+      /**
+      * greetのpパラメータの型に注目してください。person.typeです。
+      * これは、先ほど言及したシングルトン型のひとつです。この場合、personというオブジェクトに固有の型で、他のオブジェクトにgreetを使うことができません。
+      * これは、すべての Scala 整数で共有される Int のような型とは大きく異なります。
       *
-      * greet メソッドの型は何ですか?
-      * このメソッドを使って他のオブジェクトに挨拶することはできますか？
+      * このことは，Scalaでプログラムを書くことに大きな制限を与えています．
+      * 私たちが書けるのは，組み込み型か，自分で作った単一のオブジェクトを扱うメソッドだけです．
+      * 有用なプログラムを作るためには、独自の型を定義し、それぞれに複数の値を作成する機能が必要です。
+      * これを実現するには、次のセクションで説明するクラスを使います。
+      */
+    }
+
+    object chapter2456 {
+
+      /**
+        * #### 2.4.5.6 The Value of Methods
+        * メソッドは値ですか？それは式ですか？なぜこのようなことが起こるのでしょうか？
+        */
+      /**
+        * 模範
+        */
+      /**
+        * まず、メソッドと式の同等性について説明します。
+        * ご存知のように、式は値を生成するプログラムの断片です。
+        * 何かが式であるかどうかの簡単なテストは、それをフィールドに割り当てることができるかどうかです。
+        */
+//      object calculator {
+//        def square(x: Int) = x * x
+//      }
+//
+//      val someField = calculator.square
+//      // <console>:15: error: missing argument list for method square in object calculator
+//      // Unapplied methods are only converted to functions when a function type is expected.
+//      // You can make this conversion explicit by writing `square _` or `square(_)` instead of `square`.
+//      //        val someField = calculator.square
+//      //                                   ^
+
+      /**
+        * このエラーメッセージはまだ完全には理解できませんが（「部分的に適用される関数」については後で学びます）、squareが式ではないことを示しています。
+        * しかし、squareを呼び出すと値が得られます。
+        */
+//      val someField = calculator.square(2)
+//      // someField: Int = 4
+
+      /**
+        * 引数を持たないメソッドは、挙動が異なるように見えます。しかし、これは構文のトリックです。
+        */
+      object clock {
+        def time = System.currentTimeMillis
+      }
+
+      val now = clock.time
+      // now: Long = 1594032605030
+
+      /**
+        * now に clock.time が値として割り当てられているように見えますが、実際には clock.time を呼び出して返された値が割り当てられています。
+        * このメソッドをもう一度呼び出して、このことを確認してみましょう。
+        */
+      val aBitLaterThanNow = clock.time
+      // aBitLaterThanNow: Long = 1594032605068
+
+      /**
+      * 上で見たように，フィールドへの参照と引数のないメソッドへの呼び出しは，Scalaでは同じように見えます。
+      * これは，他のコードに影響を与えることなく，フィールドの実装とメソッドの実装を入れ替えることができるように設計されています（逆も然り）．
+      * これは，uniform access principle と呼ばれるプログラミング言語の特徴です。
+      *
+      * 要するに，メソッドの呼び出しは式ですが，メソッド自体は式ではありません。
+      * メソッドに加えて、Scalaには関数という概念があります。
+      * 関数はメソッドのように呼び出すことができるオブジェクトです。
+      * オブジェクトが値であることを知っているように，関数も値であり，データとして扱うことができます。
+      * ご存知のように、関数はScalaの大きな強みである関数型プログラミングの重要な部分です。
+      * 関数と関数型プログラミングについては、もう少し後に説明します。
       */
     }
   }
 
   def main(args: Array[String]): Unit = {
     println("chapter24")
+  }
+}
+
+object chapter25 {
+
+  /**
+    * ## 2.5 Writing Methods
+    * 前のセクションでは、メソッドの構文を見ました。
+    * このコースの主な目的の一つは，構文を超えて，Scalaプログラムを構築するための体系的な手法を身につけることです。
+    * このセクションは、そのような問題を扱う最初のセクションです。
+    * このセクションでは、メソッドを構築するための体系的な方法を見ていきます。
+    * Scala を使いこなせるようになると、この方法のいくつかのステップを省略することができますが、このコースではこの方法に従うことを強くお勧めします。
+    *
+    * アドバイスを具体的にするために、前のセクションの練習問題を例にします。
+    *
+    * calcというオブジェクトを定義し、引数にDoubleを受け取り、その入力を正方形にするメソッドsquareを定義します。
+    * 入力を立方体にするcubeというメソッドを追加し、その結果の計算の一部としてsquareを呼び出します。
+    */
+  object chapter251 {
+
+    /**
+    * ### 2.5.1 Identify the Input and Output
+    * 最初のステップは、入力パラメータがある場合はその種類を、メソッドの結果を確認することです。
+    * 多くの場合、練習問題に型が記載されているので、説明文からそのまま読み取ることができます。
+    * 上の例では，入力の型はDoubleとなっています．推測される結果の型もDoubleです。
+    */
+  }
+
+  object chapter252 {
+
+    /**
+      * ### 2.5.2 Prepare Test Cases
+      * 型だけではすべてを語ることはできません。DoubleからDoubleへの関数はたくさんありますが、二乗を実装したものはほとんどありません。
+      * そのため、メソッドの期待される動作を示すテストケースを用意する必要があります。
+      *
+      * このコースでは、外部への依存を避けるために、テストライブラリを使用するつもりはありません。
+      * しかし，Scala が提供する assert 関数を使って，貧乏人向けのテストライブラリを実装することができます．
+      * この広場の例では，次のようなテストケースがあります．
+      */
+    import Chapter2.chapter24.chapter245.chapter2452.calc.square
+
+    assert(square(2.0) == 4.0)
+    assert(square(3.0) == 9.0)
+    assert(square(-2.0) == 4.0)
+  }
+
+  object chapter253 {
+
+    /**
+      * ### 2.5.3 Write the Declaration
+      * 型とテストケースの準備ができたら、今度はメソッドの宣言を書きます。
+      * ボディはまだ作っていないので，Scalaのもう一つの機能である?
+      */
+    def square(in: Double): Double =
+      ???
+
+    /**
+    * このステップは、これまでのステップで収集した情報をもとに、機械的に行う必要があります。
+    */
+  }
+
+  object chapter254 {
+
+    /**
+    * ### 2.5.4 Run the Code
+    * コードを実行して、コンパイルされていること (つまり、タイプミスがないこと) と、テストが失敗すること (つまり、何かをテストしていること) を確認します。
+    * テストをメソッド宣言の後に配置する必要があるかもしれません。
+    */
+  }
+
+  object chapter255 {
+
+    /**
+      * ### 2.5.5 Write the Body
+      * これで、メソッドの本文を書く準備が整いました。
+      * このコースでは、このためのさまざまなテクニックを紹介します。今回は、2つのテクニックをご紹介します。
+      */
+    object chapter2551 {
+
+      /**
+      * #### 2.5.5.1 Consider the Result Type
+      * 最初のテクニックは、結果の型、ここではDoubleを見ることです。
+      * どうやってDoubleの値を作るのでしょうか？リテラルを書くこともできますが、この場合は明らかに正しくありません。
+      * Doubleを作成する他の方法としては、あるオブジェクトのメソッドを呼び出すことがあります。
+      */
+    }
+
+    object chapter2552 {
+
+      /**
+        * #### 2.5.5.2 Consider the Input Type
+        * 次のテクニックは、メソッドへの入力パラメータのタイプを見ることです。
+        * 今回の例ではDoubleです。Doubleを作成する必要があることはわかったので、入力からDoubleを作成するにはどのようなメソッドを呼べばよいでしょうか。
+        * そのようなメソッドはたくさんありますが、ここではドメインの知識を使って、呼び出すべき正しいメソッドとして * を選択しなければなりません。
+        *
+        * これで、完全なメソッドを次のように書くことができます。
+        */
+      def square(in: Double): Double =
+        in * in
+    }
+  }
+
+  object chapter256 {
+
+    /**
+      * ### 2.5.6 Run the Code, Again
+      * 最後に、もう一度コードを実行して、今回のテストがすべて合格していることを確認します。
+      * これはとても簡単な例ですが、このプロセスを今から練習しておけば、後に遭遇するより複雑な例にも役立つでしょう。
+      */
+
+    /**
+      * ---
+      *
+      * **メソッド作成のプロセス**
+      * メソッドを体系的に書くための6つのプロセスをご紹介します。
+      *
+      * 1. メソッドの入力と出力の種類を特定する。
+      * 2. 入力例が与えられたときのメソッドの期待される出力について、いくつかのテストケースを書きます。これらのケースを書くためにassert関数を使うことができます。
+      * 3. メソッドの宣言を、ボディに「???」
+      */
+//    def name(parameter: type, ...): resultType =
+//      ???
+
+    /**
+    * 4. コードを実行して、テストケースが実際に失敗することを確認します。
+    * 5. メソッドの本体を書きます。ここでは2つのテクニックを使うことができます。
+    * - 結果の型とそのインスタンスを生成する方法を検討する。
+    * - 入力タイプと、それを結果タイプに変換するために呼び出すことができるメソッドを検討します。
+    * 6. コードを再度実行し、テストケースがパスすることを確認します。
+    *
+    * ---
+    */
+  }
+}
+
+object chapter26 {
+
+  /**
+    * ## 2.6 Compound Expressions
+    * Scalaの基本的な紹介はほぼ終わりました。
+    * このセクションでは、より複雑なプログラムで必要となる、
+    * 条件式とブロックという2つの特別な種類の式について見ていきます。
+    */
+  object chapter261 {
+
+    /**
+      * ### 2.6.1 Conditionals
+      * 条件式では、ある条件に基づいて評価する式を選ぶことができます。
+      * 例えば、2つの数字のうちどちらが小さいかに基づいて、文字列を選択することができます。
+      */
+    if (1 < 2) "Yes" else "No"
+    // res0: String = Yes
+
+    /**
+      * ---
+      *
+      * **条件式は表現**
+      * Scalaのif文は、Javaのif文と同じ構文です。重要な違いの一つは、Scalaの条件式は式であるということです。
+      *
+      * ---
+      */
+    /**
+      * 選択されていない式は評価されません。
+      * これは、副作用のある式を使うと明らかになります。
+      */
+    if (1 < 2) println("Yes") else println("No")
+    // Yes
+
+    /**
+      * コンソールにNoが出力されないことから、`println("No")` という式が評価されていないことがわかります。
+      */
+
+    /**
+      * ---
+      *
+      * **条件式の構文**
+      * 条件式の構文は次のとおりです。
+      */
+//    if(condition)
+//      trueExpression
+//    else
+//      falseExpression
+
+    /**
+    *
+    * ここで
+    * - condition は、Boolean 型の式です。
+    * - trueExpression は、condition が true と評価された場合に評価される式です。
+    * - falseExpression は、condition が false と評価された場合に評価される式です。
+    *
+    * ---
+    */
+  }
+
+  object chapter262 {
+
+    /**
+      * ### 2.6.2 Blocks
+      * ブロックは、計算を連続して行うための式です。
+      * ブロックは、セミコロンまたは改行で区切られたサブ式を含む中括弧のペアとして記述されます。
+      */
+    { 1; 2; 3 }
+    // <console>:13: warning: a pure expression does nothing in statement position; you may be omitting necessary parentheses
+    //        { 1; 2; 3 }
+    //          ^
+    // <console>:13: warning: a pure expression does nothing in statement position; you may be omitting necessary parentheses
+    //        { 1; 2; 3 }
+    //             ^
+    // error: No warnings can be incurred under -Xfatal-warnings.
+
+    /**
+      * ご覧のとおり、このコードを実行すると、コンソールにいくつかの警告が表示され、Int値3が返されます。
+      * ブロックとは，中括弧で囲まれた一連の式または宣言のことです。
+      * ブロックは、式でもあります。ブロックは、そのサブ式を順番に実行し、最後の式の値を返します。
+      * 1と2の値を捨ててしまうのに、なぜ1と2を実行するのですか？ これは良い質問で，Scalaのコンパイラが上記の警告を発した理由でもあります．
+      * ブロックを使う理由の一つは，最終的な値を計算する前に副作用を発生させるコードを使うことです．
+      */
+    {
+      println("This is a side-effect")
+      println("This is a side-effect as well")
+      3
+    }
+    // This is a side-effect
+    // This is a side-effect as well
+    // res3: Int = 3\
+
+    /**
+      * 以下のように、中間結果に名前を付けたい場合にもブロックを使うことができます。
+      */
+    def name: String = {
+      val title = "Professor"
+      val name = "Funkenstein"
+      title + " " + name
+    }
+    name
+    // res4: String = Professor Funkenstein
+
+    /**
+      * ---
+      *
+      * **ブロック式の構文**
+      * ブロック式の構文は次のとおりです。
+      */
+//    {
+//      declarationOrExpression ...
+//      expression
+//    }
+
+    /**
+    *
+    * ここで
+    * - オプションのdeclarationOrExpressionsは、declarationsまたはexpressionです。
+    * - expressionは、ブロック式のタイプと値を決定する式です。
+    *
+    * ---
+    */
+  }
+
+  object chapter263 {
+
+    /**
+      * ### 2.6.3 Take home points
+      * 条件式では、ブーリアン条件に基づいて評価する式を選ぶことができます。その構文は
+      */
+//    if(condition)
+//      trueExpression
+//    else
+//      falseExpression
+
+    /**
+      * 条件式は、式であるため、型を持ち、オブジェクトとして評価されます。
+      * ブロックは、式や宣言を連続させることができます。
+      * 一般的には、副作用のある式を並べたり、計算の中間結果に名前を付けたりする場合に使用します。その構文は
+      */
+//    {
+//      declarationOrExpression ...
+//      expression
+//    }
+    /**
+    * ブロックの型と値は、ブロック内の最後の式のものです。
+    */
+  }
+
+  object chapter264 {
+
+    /**
+      * ## 2.6.4 Exercises
+      */
+    object chapter2641 {
+
+      /**
+        * 次の条件式の種類と値は何ですか？
+        */
+      if (1 > 2) "alien" else "predator"
+
+      /**
+        * 模範
+        */
+      /**
+        * それは、値が "predator "のString（文字列）です。プレデターは明らかに最高です。
+        */
+      if (1 > 2) "alien" else "predator"
+      // res6: String = predator
+
+      /**
+      * 型は、thenおよびelse式の型の上限によって決定されます。
+      * この場合、両方の式が文字列なので、結果も文字列になります。
+      * 値は実行時に決定されます。2 は 1 より大きいので、条件式の評価は else 式の値になります。
+      */
+    }
+
+    object chapter2462
+  }
+
+  object chapter27 {
+
+    /**
+    * ## 2.7 Conclusion
+    * これまでに、Scalaの基礎を簡単に紹介してきました。
+    *
+    * * 値を評価する「式」，そして
+    * * 宣言：値に名前を付けます。
+    *
+    * 多くのオブジェクトのリテラルを書いたり，メソッドコールや複合式を使って既存のオブジェクトから新しいオブジェクトを作ったりする方法を見てきました．
+    *
+    * また、自分自身のオブジェクトを宣言し、メソッドやフィールドを構築しました。
+    * 次に、新しい種類の宣言であるクラスが、オブジェクトを作成するためのテンプレートをどのように提供するかを見ていきます。
+    * クラスを使うことで、コードを再利用したり、似たようなオブジェクトを共通の型で統一したりすることができます。
+    */
   }
 }
