@@ -49,7 +49,8 @@ object chapter31 {
 
     /**
       * オブジェクトのタイプがPersonであることに注目してください。
-      * 印刷された値には @xxxxxxxx という形式のコードが含まれており、これは特定のオブジェクトに固有の識別子です。newを呼び出すたびに、同じ型の異なるオブジェクトが作成されます。
+      * 印刷された値には @xxxxxxxx という形式のコードが含まれており、これは特定のオブジェクトに固有の識別子です。
+      * newを呼び出すたびに、同じ型の異なるオブジェクトが作成されます。
       */
     noel
     // res2: Person = Person@3a1d255f
@@ -629,5 +630,315 @@ object chapter31 {
       */
     import Chapter3.chapter31.chapter316.chapter3164.Counter
     println(new Counter(10).inc.dec.inc.inc.count)
+  }
+}
+
+object chapter32 {
+
+  /**
+    * ## 3.2 Objects as Functions
+    * 前節の最後の演習では、Adderというクラスを定義しました。
+    */
+  class Adder(amount: Int) {
+    def add(in: Int): Int = in + amount
+  }
+
+  /**
+    * 議論の中で、Adderを計算を表すオブジェクトと説明しました。これは、値として渡すことができるメソッドを持つようなものです。
+    *
+    * これは非常に強力な概念であり、Scalaには計算のように振る舞うオブジェクトを作成するための言語機能が完備されています。
+    * これらのオブジェクトは関数と呼ばれ，関数型プログラミングの基礎となっています。
+    */
+  object chapter321 {
+
+    /**
+      * ### 3.2.1 The apply method
+      * ここでは、関数型プログラミングをサポートするScalaの機能の1つである、関数応用構文を見てみましょう。
+      *
+      * Scalaでは，applyという名前のメソッドを持つオブジェクトを関数のように「呼び出す」ことができるようになっています．
+      * メソッド名を apply とすることで，特別に短縮された呼び出し構文を使うことができます：foo.apply(args) は foo(args) になります．
+      *
+      * 例えば、Adderのaddメソッドをapplyに変更してみましょう。
+      */
+    class Adder(amount: Int) {
+      def apply(in: Int): Int = in + amount
+    }
+    val add3 = new Adder(3)
+    // add3: Adder = Adder@4185f338
+
+    add3.apply(2)
+    // res0: Int = 5
+
+    add3(4) // shorthand for add3.apply(4)
+    // res1: Int = 7
+
+    /**
+      * この一手間で、オブジェクトは構文上、関数のように「見せる」ことができます。
+      * オブジェクトを変数に代入したり、引数として渡したりするなど、メソッドではできないことがたくさんあります。
+      */
+
+    /**
+    * ---
+    *
+    * **Function Application Syntax**
+    * メソッドコールのobject.apply(parameter, ...)は、object(parameter, ...)と書くこともできます。
+    *
+    * ---
+    */
+  }
+
+  object chapter322 {
+
+    /**
+    * ### 3.2.2 Take home points
+    * このセクションでは、オブジェクトをあたかも関数のように「呼び出す」ことができる、関数適用構文について説明しました。
+    *
+    * 関数応用構文は、applyメソッドを定義しているすべてのオブジェクトで使用できます。
+    *
+    * 関数応用構文では、計算のように振る舞う第一級の値を持つことができます。
+    * メソッドとは異なり、オブジェクトはデータとして渡すことができます。これで、Scalaにおける真の関数型プログラミングに一歩近づきました。
+    */
+  }
+
+  object chapter323 {
+
+    /**
+      * ### 3.2.3 Exercises
+      */
+    object chapter3231 {
+
+      /**
+        * #### 3.2.3.1 When is a Function not a Function?
+        * 次のセクションの終わりには、いくつかのコードを書く機会があるでしょう。
+        * 今のところ、重要な理論的疑問について考えてみましょう。
+        *
+        * 関数応用構文は、計算をしてくれる真に再利用可能なオブジェクトを作るのに、どの程度まで近づいているのでしょうか？ 私たちには何が足りないのでしょうか？
+        */
+
+      /**
+        * 模範
+        */
+      /**
+      * 主に欠けているのは、値を適切に抽象化する方法である型です。
+      *
+      * 現時点では、Adderというクラスを定義して、数字に足すというアイデアを表現することができますが、そのコードはコードベース間で適切にポータブルではありません - 他の開発者は、私たちの特定のクラスについて知る必要があります。
+      *
+      * Handler，Callback，Adder，BinaryAdderなどの名前で共通の関数型のライブラリを定義することもできますが，これはすぐに実用的ではなくなります。
+      *
+      * 後ほど，Scala がこの問題にどのように対処しているのか，さまざまな状況で使用できる一般的な関数型のセットを定義することで見てみましょう。
+      */
+    }
+  }
+}
+
+object chapter33 {
+
+  /**
+    * ## 3.3 Companion Objects
+    * 論理的にはクラスに属していても、特定のオブジェクトに依存しないメソッドを作りたいことがあります。
+    * Javaでは，このような場合，スタティックメソッドを使用しますが，Scalaには，シングルトンオブジェクトという，よりシンプルな解決策があります．
+    *
+    * 一般的な使用例として、補助コンストラクタがあります。
+    * Scalaにはクラスに複数のコンストラクタを定義できる構文がありますが、Scalaのプログラマはほとんどの場合、追加のコンストラクタをクラスと同じ名前のオブジェクトの適用メソッドとして実装することを好みます。
+    * このオブジェクトをクラスのコンパニオンオブジェクトと呼んでいます。例えば，以下のようになります．
+    */
+  class Timestamp(val seconds: Long)
+
+  object Timestamp {
+    def apply(hours: Int, minutes: Int, seconds: Int): Timestamp =
+      new Timestamp(hours * 60 * 60 + minutes * 60 + seconds)
+  }
+  Timestamp(1, 1, 1).seconds
+  // res1: Long = 3661
+
+  /**
+    * ---
+    *
+    * **コンソールの効果的な使い方**
+    * 上のトランスクリプトでは、:pasteコマンドを使用しています。
+    * コンパニオンオブジェクトは、サポートするクラスと同じコンパイルユニットで定義する必要があります。
+    * 通常のコードベースでは、これは単にクラスとオブジェクトを同じファイルに定義することを意味しますが、REPLでは :paste を使用して1つのコマンドにそれらを入力しなければなりません。
+    *
+    * 詳細については、REPLで:helpと入力することができます。
+    *
+    * ---
+    */
+  /**
+    * 先ほど見たように、Scalaには型名の空間と値名の空間という2つの名前空間があります。
+    * この分離により，クラスとコンパニオン・オブジェクトに同じ名前を付けても矛盾しないようになっています．
+    *
+    * ここで重要なのは，コンパニオン・オブジェクトはクラスのインスタンスではなく，独自の型を持つシングルトン・オブジェクトであるということです．
+    */
+  Timestamp // note that the type is `Timestamp.type`, not `Timestamp`
+  // res2: Timestamp.type = Timestamp$@137bf92e
+
+  /**
+    * ---
+    *
+    * **コンパニオンオブジェクトの構文**
+    * クラスのコンパニオン・オブジェクトを定義するには、そのクラスと同じファイルに、同じ名前のオブジェクトを定義します。
+    */
+//  class Name {
+//    ...
+//  }
+//
+//  object Name {
+//    ...
+//  }
+  /**
+    *
+    * ---
+    */
+  object chapter331 {
+
+    /**
+    * ### 3.3.1 Take home points
+    * コンパニオンオブジェクトは、機能をクラスのインスタンスに関連付けることなく、クラスに関連付ける手段となります。
+    * コンパニオン・オブジェクトは、コンストラクタの追加によく使われます。
+    *
+    * コンパニオン・オブジェクトは、Javaのスタティック・メソッドに代わるものです。
+    * コンパニオン・オブジェクトは、同等の機能を提供し、より柔軟性があります。
+    *
+    * コンパニオン・オブジェクトは、関連付けられたクラスと同じ名前を持っています。
+    * Scalaには、値の名前空間と型の名前空間の2つの名前空間があるので、これは名前の衝突を引き起こしません。
+    *
+    * コンパニオン・オブジェクトは、関連するクラスと同じファイルで定義しなければなりません。
+    * REPLで入力する際には、クラスとコンパニオンオブジェクトは、:pasteモードを使って同じコードブロックに入力する必要があります。
+    */
+  }
+
+  object chapter332 {
+
+    /**
+      * ### 3.3.2 Exercises
+      */
+    object chapter3321 {
+
+      /**
+        * #### 3.3.2.1 Friendly Person Factory
+        */
+//      class Person(val name: String)
+//
+//      object Person {
+//        def apply(firstName: String, lastName: String): Person =
+//          new Person(firstName + " " + lastName)
+//      }
+
+      /**
+        * 模範
+        */
+      class Person(val firstName: String, val lastName: String) {
+        def name: String =
+          s"$firstName $lastName"
+      }
+
+      object Person {
+        def apply(name: String): Person = {
+          val parts = name.split(" ")
+          new Person(parts(0), parts(1))
+        }
+      }
+    }
+
+//    object chapter3322 {
+//      class Director(val firstName: String, val lastName: String, val yearOfBirth: Int) {
+//        def name: String = s"$firstName $lastName"
+//      }
+//
+//      object Director {
+//        def apply(firstName: String, lastName: String, yearOfBirth: Int): Director =
+//          new Director(firstName, lastName, yearOfBirth)
+//        def older(d1: Director, d2: Director) = if (d1.yearOfBirth >= d2.yearOfBirth) d1 else d2
+//      }
+//
+//      class Film(val name: String,
+//                 val yearOfRelease: Int,
+//                 val imdbRating: Double,
+//                 val director: Director) {
+//        def directorsAge: Int = yearOfRelease - director.yearOfBirth
+//        def isDirectedBy(d: Director): Boolean = if (d.name == director.name) true else false
+//        def copy(name: String = this.name,
+//                 yearOfRelease: Int = this.yearOfRelease,
+//                 imdbRating: Double = this.imdbRating,
+//                 director: Director = this.director) =
+//          new Film(name, yearOfRelease, imdbRating, director)
+//      }
+//
+//      object Film {
+//        def apply(name: String, yearOfRelease: Int, imdbRating: Double, director: Director): Film =
+//          new Film(name, yearOfRelease, imdbRating, director)
+//
+//        def highestRating(f1: Film, f2: Film): Film = if (f1.imdbRating >= f2.imdbRating) f1 else f2
+//        def oldestDirectorAtTheTime(f1: Film, f2: Film): Film =
+//          if (f1.directorsAge >= f2.directorsAge)
+//            f1
+//          else f2
+//      }
+    class Director(val firstName: String, val lastName: String, val yearOfBirth: Int) {
+
+      def name: String =
+        s"$firstName $lastName"
+
+      def copy(firstName: String = this.firstName,
+               lastName: String = this.lastName,
+               yearOfBirth: Int = this.yearOfBirth) =
+        new Director(firstName, lastName, yearOfBirth)
+    }
+
+    object Director {
+      def apply(firstName: String, lastName: String, yearOfBirth: Int): Director =
+        new Director(firstName, lastName, yearOfBirth)
+
+      def older(director1: Director, director2: Director): Director =
+        if (director1.yearOfBirth < director2.yearOfBirth) director1 else director2
+    }
+
+    class Film(val name: String,
+               val yearOfRelease: Int,
+               val imdbRating: Double,
+               val director: Director) {
+
+      def directorsAge =
+        director.yearOfBirth - yearOfRelease
+
+      def isDirectedBy(director: Director) =
+        this.director == director
+
+      def copy(name: String = this.name,
+               yearOfRelease: Int = this.yearOfRelease,
+               imdbRating: Double = this.imdbRating,
+               director: Director = this.director) =
+        new Film(name, yearOfRelease, imdbRating, director)
+    }
+
+    object Film {
+      def apply(name: String, yearOfRelease: Int, imdbRating: Double, director: Director): Film =
+        new Film(name, yearOfRelease, imdbRating, director)
+
+      def newer(film1: Film, film2: Film): Film =
+        if (film1.yearOfRelease < film2.yearOfRelease) film1 else film2
+
+      def highestRating(film1: Film, film2: Film): Double = {
+        val rating1 = film1.imdbRating
+        val rating2 = film2.imdbRating
+        if (rating1 > rating2) rating1 else rating2
+      }
+
+      def oldestDirectorAtTheTime(film1: Film, film2: Film): Director =
+        if (film1.directorsAge > film2.directorsAge) film1.director else film2.director
+    }
+  }
+  def main(args: Array[String]): Unit = {
+    import Chapter3.chapter33.chapter332.chapter3321.Person
+//    println(Person("Jane", "Doe").name)
+    Person.apply("John Doe").firstName // full method call
+    // res5: String = John
+
+    Person("John Doe").firstName // sugared apply syntax
+    // res6: String = John
+
+    /**
+    * **************************************************
+    */
   }
 }
