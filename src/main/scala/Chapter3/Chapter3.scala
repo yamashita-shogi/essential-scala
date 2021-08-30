@@ -897,7 +897,6 @@ object chapter33 {
                val yearOfRelease: Int,
                val imdbRating: Double,
                val director: Director) {
-
       def directorsAge =
         director.yearOfBirth - yearOfRelease
 
@@ -941,4 +940,569 @@ object chapter33 {
     * **************************************************
     */
   }
+}
+
+object chapter34 {
+
+  /**
+    * ## 3.4 Case Classes
+    * ケース・クラスは、クラス、コンパニオン・オブジェクト、および多くの適切なデフォルトを一度に定義するための非常に便利な略記法です。
+    * ケースクラスは、データを保持する軽量なクラスを最小限の手間で作成するのに最適です。
+    *
+    * ケースクラスは、クラス定義の前にキーワードcaseを付けるだけで作成できます。
+    */
+  case class Person(firstName: String, lastName: String) {
+    def name = firstName + " " + lastName
+  }
+
+  /**
+    * **caseクラスを宣言すると、Scalaは自動的にクラスとコンパニオン・オブジェクトを生成します。**
+    */
+  val dave = new Person("Dave", "Gurnell") // we have a class
+  // dave: Person = Person(Dave,Gurnell)
+
+  Person // and a companion object too
+  // res0: Person.type = Person
+
+  /**
+    * さらに、クラスとコンパニオンには、非常に便利な機能があらかじめ用意されています。
+    */
+  object chapter341 {
+
+    /**
+      * ### 3.4.1 Features of a case class
+      * 1 コンストラクタの引数ごとのフィールドです。コンストラクタの定義で val を記述する必要はありませんが、記述しても問題はありません。
+      */
+    dave.firstName
+    // res1: String = Dave
+
+    /**
+      * 2 デフォルトのtoStringメソッドは、コンストラクタのようなクラスの表現を表示します（@記号や暗号のような16進数は使用しません）。
+      */
+    dave
+    // res2: Person = Person(Dave,Gurnell)
+
+    /**
+      * 3 オブジェクトのフィールド値を操作するSensible equals、およびhashCodeメソッド。
+      * これにより、リスト、セット、マップなどのコレクションでケースクラスを簡単に使用することができます。
+      * また、オブジェクトを比較する際に、参照元のアイデンティティではなく、そのコンテンツに基づいて比較することができます。
+      */
+    new Person("Noel", "Welsh").equals(new Person("Noel", "Welsh"))
+    // res3: Boolean = true
+
+    new Person("Noel", "Welsh") == new Person("Noel", "Welsh")
+    // res4: Boolean = true
+
+    /**
+      * 4 現在のオブジェクトと同じフィールド値を持つ新しいオブジェクトを作成するコピーメソッドです。
+      */
+    dave.copy()
+    // res5: Person = Person(Dave,Gurnell)
+
+    /**
+      * copy メソッドは、現在のオブジェクトを返すのではなく、新しいクラスのオブジェクトを作成して返すことに注意してください。
+      *
+      * copy メソッドには、コンストラクタの各パラメータに対応するオプションのパラメータを指定できます。
+      * パラメータが指定された場合、新しいオブジェクトは現在のオブジェクトの既存の値ではなく、その値を使用します。
+      * このメソッドは、キーワードパラメータを使用して、1つまたは複数のフィールドの値を変更しながらオブジェクトをコピーする場合に最適です。
+      */
+    dave.copy(firstName = "Dave2")
+    // res6: Person = Person(Dave2,Gurnell)
+
+    dave.copy(lastName = "Gurnell2")
+    // res7: Person = Person(Dave,Gurnell2)
+
+    /**
+      * ---
+      *
+      * **値と基準値の均等性**
+      * Scalaの==演算子はJavaのものとは異なり、参照の同一性で値を比較するのではなく、equalsに委ねられます。
+      * Scalaには、Javaの==と同じ動作をするeqという演算子がありますが、アプリケーションコードで使われることはほとんどありません。
+      */
+    new Person("Noel", "Welsh") eq (new Person("Noel", "Welsh"))
+    // res8: Boolean = false
+
+    dave eq dave
+    // res9: Boolean = true
+    /**
+      *
+      *  ---
+      */
+
+    /**
+    * 5 Caseクラスは、java.io.Serializableとscala.Productの2つのtraitを実装しています。どちらも直接は使用しません。
+    * 後者は，フィールドの数とケースクラスの名前を調べるためのメソッドを提供しています。
+    */
+  }
+
+  object chapter342 {
+
+    /**
+      * ### 3.4.2 Features of a case class companion object
+      * コンパニオンオブジェクトには，クラスのコンストラクタと同じ引数を持つ apply メソッドが含まれています．
+      * Scalaプログラマはコンストラクタよりもapplyメソッドを好む傾向があります。
+      * newを省略することで簡潔になり、コンストラクタが式の中で読みやすくなるからです。
+      */
+    Person("Dave", "Gurnell") == Person("Noel", "Welsh")
+    // res10: Boolean = false
+
+    Person("Dave", "Gurnell") == Person("Dave", "Gurnell")
+    // res11: Boolean = true
+
+    /**
+      * 最後に、コンパニオン・オブジェクトには、パターン・マッチングで使用する抽出パターンを実装するコードも含まれています。
+      * これはこの章の後半で紹介します。
+      */
+
+    /**
+      * ---
+      *
+      * **ケースクラス宣言の構文**
+      * ケースクラスを宣言する構文は
+      */
+//    case class Name(parameter: type, ...) {
+//      declarationOrExpression ...
+//    }
+    /**
+    * ここで
+    * - Name は、ケースクラスの名前です。
+    * - オプションのパラメータは、コンストラクタのパラメータに与えられる名前です。
+    * - type は、コンストラクタのパラメータの型です。
+    * - オプションの declarationOrExpressions は、宣言または式です。
+    *
+    * ---
+    */
+  }
+
+  object chapter343 {
+
+    /**
+      * ### 3.4.3 Case objects
+      * 最後の注意点です。コンストラクタの引数がない case クラスを定義してしまった場合、代わりに case オブジェクトを定義することができます。
+      * ケース・オブジェクトは通常のシングルトン・オブジェクトと同様に定義されますが、より意味のある toString メソッドを持ち、Product および Serializable 形質を拡張します。
+      */
+    case object Citizen {
+      def firstName = "John"
+      def lastName = "Doe"
+      def name = firstName + " " + lastName
+    }
+    Citizen.toString
+    // res12: String = Citizen
+  }
+
+  object chapter344 {
+
+    /**
+      * ### 3.4.4 Take Home Points
+      * Caseクラスは、Scalaのデータ型の基本中の基本です。使って、学んで、愛してください。
+      * ケースクラスを宣言する構文は、クラスを宣言する構文と同じですが、ケースが付加されています。
+      */
+//    case class Name(parameter: type, ...) {
+//      declarationOrExpression ...
+//    }
+    /**
+    * Caseクラスには、タイプミスを防ぐために自動生成されるメソッドや機能が数多くあります。
+    * 関連するメソッドを自分で実装することで、この動作を部分的にオーバーライドすることができます。
+    * Scala 2.10およびそれ以前のバージョンでは、0から22個のフィールドを含むケースクラスを定義できます。
+    * Scala 2.11では、任意のサイズのケースクラスを定義できるようになりました。
+    */
+  }
+
+  object chapter345 {
+
+    /**
+      * ### 3.4.5 Exercises
+      */
+    object chapter3451 {
+
+      /**
+        * #### 3.4.5.1 Case Cats
+        */
+      case class Cat(Colour: String, Food: String)
+
+      /**
+        * 模範
+        */
+      /**
+        * もう一つの簡単な指の運動。
+        */
+//      case class Cat(colour: String, food: String)
+    }
+
+    object chapter3452 {
+
+      /**
+        * #### 3.4.5.2 Roger Ebert Said it Best…
+        */
+      case class Director(firstName: String, lastName: String, yearOfBirth: Int) {
+        def name: String = s"$firstName $lastName"
+      }
+
+      object Director {
+        def older(director1: Director, director2: Director): Director =
+          if (director1.yearOfBirth < director2.yearOfBirth) director1 else director2
+      }
+
+      case class Film(name: String, yearOfRelease: Int, imdbRating: Double, director: Director) {
+        def directorsAge = director.yearOfBirth - yearOfRelease
+        def isDirectedBy(director: Director) = this.director == director
+      }
+
+      object Film {
+        def newer(film1: Film, film2: Film): Film =
+          if (film1.yearOfRelease < film2.yearOfRelease) film1 else film2
+
+        def highestRating(film1: Film, film2: Film): Double = {
+          val rating1 = film1.imdbRating
+          val rating2 = film2.imdbRating
+          if (rating1 > rating2) rating1 else rating2
+        }
+
+        def oldestDirectorAtTheTime(film1: Film, film2: Film): Director =
+          if (film1.directorsAge > film2.directorsAge) film1.director else film2.director
+      }
+
+      /**
+        * 模範
+        */
+      /**
+        * Caseクラスは、copyメソッドとapplyメソッドを提供し、コンストラクタの各引数の前にvalを書く必要がありません。
+        * 最終的なコードベースは以下のようになります。
+        */
+//      case class Director(firstName: String, lastName: String, yearOfBirth: Int) {
+//        def name: String =
+//          s"$firstName $lastName"
+//      }
+//
+//      object Director {
+//        def older(director1: Director, director2: Director): Director =
+//          if (director1.yearOfBirth < director2.yearOfBirth) director1 else director2
+//      }
+//
+//      case class Film(name: String, yearOfRelease: Int, imdbRating: Double, director: Director) {
+//
+//        def directorsAge =
+//          yearOfRelease - director.yearOfBirth
+//
+//        def isDirectedBy(director: Director) =
+//          this.director == director
+//      }
+//
+//      object Film {
+//        def newer(film1: Film, film2: Film): Film =
+//          if (film1.yearOfRelease < film2.yearOfRelease) film1 else film2
+//
+//        def highestRating(film1: Film, film2: Film): Double = {
+//          val rating1 = film1.imdbRating
+//          val rating2 = film2.imdbRating
+//          if (rating1 > rating2) rating1 else rating2
+//        }
+//
+//        def oldestDirectorAtTheTime(film1: Film, film2: Film): Director =
+//          if (film1.directorsAge > film2.directorsAge) film1.director else film2.director
+//      }
+      /**
+      * このコードは大幅に短くなっただけでなく、equalsメソッド、toStringメソッド、パターンマッチ機能を備えており、後の演習に備えています。
+      */
+    }
+
+    object chapter3453 {
+
+      /**
+        * 必要に応じてcopyを使用して、Counterをケースクラスとして再実装します。さらに、countをデフォルト値の0に初期化します。
+        */
+      // 不要だった
+//      case class Adder(amount: Int) {
+//        def add(in: Int) = in + amount
+//      }
+
+      case class Counter(count: Int = 0) {
+        def dec = this.copy(count - 1)
+        def inc = this.copy(count + 1)
+//        def adjust(adder: Adder) = this.copy(adder.add(count))
+      }
+
+      /**
+        * 模範
+        */
+//      case class Counter(count: Int = 0) {
+//        def dec = copy(count = count - 1)
+//        def inc = copy(count = count + 1)
+//      }
+      /**
+        * これはほとんどトリックの練習で、以前の実装との違いはほとんどありません。
+        * しかし、私たちが無料で手に入れた追加機能に注目してください。
+        */
+      Counter(0) // `new` を使わずにオブジェクトを構築する
+      // res16: Counter = Counter(0)
+      // Argument duplicates corresponding parameter default value -> 引数は対応するパラメータのデフォルト値を複製
+
+      Counter().inc // プリントアウトは`count`の値を表示します。
+      // res17: Counter = Counter(1)
+
+      Counter().inc.dec == Counter().dec.inc // セマンティック・イコール・チェック
+      // res18: Boolean = true
+    }
+
+    object chapter3454 {
+
+      /**
+        * Caseクラスにコンパニオンオブジェクトを定義するとどうなるのでしょうか？見てみましょう。
+        * 前節のPersonクラスをcaseクラスにしてみましょう（ヒント：コードは上にあります）。
+        * 別の適用方法でもコンパニオン・オブジェクトがあることを確認してください。
+        */
+//      case class Person(firstName: String, lastName: String) {
+//        def name: String = s"$firstName $lastName"
+//      }
+//
+//      object Person {
+//        def apply(name: String): Person = {
+//          val parts = name.split(" ")
+//          new Person(parts(0), parts(1))
+//        }
+//      }
+
+      /**
+        * 模範
+        */
+      /**
+        * これがそのコードです。
+        */
+      case class Person(firstName: String, lastName: String) {
+        def name = firstName + " " + lastName
+      }
+
+      object Person {
+        def apply(name: String): Person = {
+          val parts = name.split(" ")
+          apply(parts(0), parts(1))
+        }
+      }
+
+      /**
+        * Personのコンパニオンオブジェクトを定義しているにもかかわらず、Scalaのケースクラスコード生成機能は期待通りに動作しています。
+        * これは、自動生成されたコンパニオンメソッドを定義したオブジェクトに追加するものです。
+        *
+        * つまり，2つの可能な型署名を持つオーバーロードされた apply メソッドを持つコンパニオン・オブジェクトができあがります．
+        */
+//      def apply(name: String): Person =
+//      // etc...
+//
+//      def apply(firstName: String, lastName: String): Person =
+//      // etc...
+    }
+  }
+}
+
+object chapter35 {
+
+  /**
+    * ## 3.5 Pattern Matching
+    * これまでは、メソッドを呼び出したり、フィールドにアクセスしたりして、オブジェクトを操作してきました。
+    * ケース・クラスでは、パターン・マッチングという別の方法でオブジェクトを操作することができます。
+    *
+    * パターン・マッチングは if 式を拡張したようなもので、データの「形状」に応じて式を評価することができます。
+    * これまでの例で見たPersonのケースクラスを思い出してください。
+    */
+  case class Person(firstName: String, lastName: String)
+
+  /**
+    * 例えば、反乱軍のメンバーを探すストームトルーパーを実装したいとします。この場合、次のようなパターンマッチングが使えます。
+    */
+  object Stormtrooper {
+    def inspect(person: Person): String =
+      person match {
+        case Person("Luke", "Skywalker") => "Stop, rebel scum!"
+        case Person("Han", "Solo")       => "Stop, rebel scum!"
+        case Person(first, last)         => s"Move along, $first"
+      }
+  }
+
+  /**
+    * パターン(Person("Luke", "Skywalker"))を表す構文と、パターンがマッチするオブジェクト(Person("Luke", "Skywalker"))を構築する構文が一致していることに注目してください。
+    * ここではそれを使用しています。
+    */
+  Stormtrooper.inspect(Person("Noel", "Welsh"))
+  // res0: String = Move along, Noel
+
+  Stormtrooper.inspect(Person("Han", "Solo"))
+  // res1: String = Stop, rebel scum!
+
+  /**
+    * ---
+    *
+    * **パターン・マッチングの構文**
+    * パターンマッチ式の構文は
+    */
+//  expr0 match {
+//    case pattern1 => expr1
+//    case pattern2 => expr2
+//      ...
+//  }
+  /**
+    * ここで
+    * - 式expr0が評価され、マッチする値になる。
+    * - この値に対して，パターン（ガード）pattern1，pattern2，...が順にチェックされる．
+    * - 最初にマッチしたパターンの右辺の式(expr1, expr2など)が評価される5。
+    * - パターンマッチングは、それ自体が式であり、評価されて値（マッチした式の値）になります。
+    *
+    * ---
+    */
+  object chapter351 {
+
+    /**
+      * ### 3.5.1 Pattern Syntax
+      * Scalaには、パターンやガードを書くための表現力豊かな構文があります。
+      * ケースクラスの場合、パターンの構文はコンストラクタの構文と一致します。例えば，データ
+      */
+    Person("Noel", "Welsh")
+    // res2: Person = Person(Noel,Welsh)
+
+    /**
+      * Personタイプにマッチするパターンが書かれています。
+      */
+//    Person(pat0, pat1)
+
+    /**
+    * ここで、pat0 と pat1 はそれぞれ firstName と lastName に対してマッチするパターンです。pat0やpat1の代わりに使用できるパターンは4つあります。
+    * 1. 名前。その位置にある任意の値とマッチし、与えられた名前にバインドされます。
+    * 例えば、Person(first, last)というパターンは、firstという名前を "Noel "という値に、lastという名前を "Welsh "という値に結びつけます。
+    *
+    * 2. アンダースコア(_)は、任意の値にマッチし、それを無視します。
+    * 例えば、ストームトルーパーは一般市民のファーストネームしか気にしないので、Person(first, _)と書けば、ラストネームの値に名前を束縛することはありません。
+    *
+    * 3. リテラルとは、そのリテラルが表す値のみにマッチすることを意味します。
+    * たとえば、Person("Han", "Solo")というパターンは、ファーストネームが "Han"、ラストネームが "Solo "の人物にマッチします。
+    *
+    * 4. 同じコンストラクタ形式の構文を使用した別の case クラスです。
+    *
+    * パターン マッチングでできることは他にもたくさんあり、パターン マッチングは実際に拡張可能です。これらの機能については、後のセクションで説明します。
+    */
+  }
+
+  object chapter352 {
+
+    /**
+      * ### 3.5.2 Take Home Points
+      * ケース・クラスは、パターン・マッチングと呼ばれる新しい形式のインタラクションを可能にします。
+      * パターン・マッチングでは、ケース・クラスを分解して、ケース・クラスに含まれるものに応じて異なる式を評価することができます。
+      *
+      * パターン・マッチングの構文は次のとおりです。
+      */
+//    expr0 match {
+//      case pattern1 => expr1
+//      case pattern2 => expr2
+//        ...
+//    }
+    /**
+    * パターンには次のようなものがあります。
+    * - 名前：任意の値をその名前に結びつける。
+    * - アンダースコア：任意の値にマッチし、それを無視する。
+    * - リテラル（そのリテラルが示す値に一致）、または
+    * - ケースクラスのコンストラクタ形式のパターン。
+    */
+  }
+
+  object chapter353 {
+
+    /**
+      * ### 3.5.3 Exercises
+      */
+    object chapter3531 {
+
+      /**
+        * #### 3.5.3.1 Feed the Cats
+        * オブジェクト ChipShop を定義し、メソッド willServe を用意します。
+        * このメソッドは、Catを受け取り、その猫の好物がチップスであればtrueを、そうでなければfalseを返す必要があります。
+        * パターンマッチングを使用します。
+        */
+//      import Chapter3.chapter34.chapter345.chapter3451.Cat
+//      object ChipShop {
+//        def willServe(cat: Cat): Boolean = {
+//          cat match {
+//            case Cat(_, "Chips") => true
+//            case _               => false
+//          }
+//        }
+//      }
+
+      /**
+        * 模範
+        */
+      /**
+        * まずは、問題文で提案されているスケルトンを書いてみましょう。
+        */
+      case class Cat(name: String, colour: String, food: String)
+//
+//      object ChipShop {
+//        def willServe(cat: Cat): Boolean =
+//          cat match {
+//            case Cat(???, ???, ???) => ???
+//          }
+//      }
+      /**
+        * 戻り値の型がブール値であることから、少なくとも2つのケースが必要であることがわかります。
+        * 練習問題のテキストには、「チップスが好きな猫」と「その他の猫」というケースが書かれています。これは、リテラルパターンと_パターンで実装できます。
+        */
+      object ChipShop {
+        def willServe(cat: Cat): Boolean =
+          cat match {
+            case Cat(_, _, "Chips") => true
+            case Cat(_, _, _)       => false
+          }
+      }
+    }
+
+    object chapter3532 {
+
+      /**
+        * #### 3.5.3.2 Get Off My Lawn!
+        * この演習では、映画評論家である私の父のシミュレーターを書きます。
+        * クリント・イーストウッド監督の映画には10.0、ジョン・マクティアナン監督の映画には7.0、その他の映画には3.0の評価をつけるという、とてもシンプルなものです。
+        * Dadというオブジェクトを実装し、Filmを受け取ってDoubleを返すメソッドrateを用意します。パターンマッチングを使用します。
+        */
+      import Chapter3.chapter34.chapter345.chapter3452.Film
+      object Dad {
+        def rate(film: Film): Double = {
+          film.director match {
+            case "Clint Eastwood" => 10.0
+            case "John McTiernan" => 7.0
+            case _                => 3.0
+          }
+        }
+      }
+
+      /**
+        * 模範
+        */
+//      object Dad {
+//        def rate(film: Film): Double =
+//          film match {
+//            case Film(_, _, _, Director("Clint", "Eastwood", _)) => 10.0
+//            case Film(_, _, _, Director("John", "McTiernan", _)) => 7.0
+//            case _ => 3.0
+//          }
+//      }
+      /**
+      * この場合、パターンマッチはかなり冗長になっています。後ほど、定数パターンと呼ばれる、特定の値にマッチするパターンマッチの使い方をご紹介します。
+      */
+
+    }
+  }
+}
+
+object chapter36 {
+
+  /**
+  * ## 3.6 Conclusions
+  * このセクションでは、クラスについて説明しました。
+  * クラスを使うことで、オブジェクトの抽象化ができることを説明しました。
+  * つまり、共通のプロパティを持ち、共通の型を持つオブジェクトを定義することができるのです。
+  *
+  * また、コンパニオン・オブジェクトについても見てきました。
+  * コンパニオン・オブジェクトは、クラスに属さない補助的なコンストラクタやその他のユーティリティ・メソッドを定義するためにScalaで使用されます。
+  *
+  * 最後に、ケースクラスを紹介しました。
+  * ケースクラスは、定型的なコードを大幅に削減し、メソッドの呼び出しに加えて、パターンマッチという新しいオブジェクトの操作方法を可能にします。
+  */
 }
