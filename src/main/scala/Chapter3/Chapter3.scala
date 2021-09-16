@@ -1024,15 +1024,18 @@ object chapter34 {
 
     dave eq dave
     // res9: Boolean = true
+
+    // eqだと厳密な比較（同一。オブジェクトが
     /**
       *
       *  ---
       */
 
     /**
-    * 5 Caseクラスは、java.io.Serializableとscala.Productの2つのtraitを実装しています。どちらも直接は使用しません。
-    * 後者は，フィールドの数とケースクラスの名前を調べるためのメソッドを提供しています。
-    */
+      * 5 Caseクラスは、java.io.Serializableとscala.Productの2つのtraitを実装しています。どちらも直接は使用しません。
+      * 後者は，フィールドの数とケースクラスの名前を調べるためのメソッドを提供しています。
+      */
+    // アクション履歴のところで↑使ってるらしい
   }
 
   object chapter342 {
@@ -1079,7 +1082,7 @@ object chapter34 {
     /**
       * ### 3.4.3 Case objects
       * 最後の注意点です。コンストラクタの引数がない case クラスを定義してしまった場合、代わりに case オブジェクトを定義することができます。
-      * ケース・オブジェクトは通常のシングルトン・オブジェクトと同様に定義されますが、より意味のある toString メソッドを持ち、Product および Serializable 形質を拡張します。
+      * ケース・オブジェクトは通常のシングルトン・オブジェクトと同様に定義されますが、より意味のある toString メソッドを持ち、Product および Serializable traitを拡張します。
       */
     case object Citizen {
       def firstName = "John"
@@ -1305,6 +1308,7 @@ object chapter35 {
     * これまでの例で見たPersonのケースクラスを思い出してください。
     */
   case class Person(firstName: String, lastName: String)
+  case class AAA(firstName: String, lastName: String)
 
   /**
     * 例えば、反乱軍のメンバーを探すストームトルーパーを実装したいとします。この場合、次のようなパターンマッチングが使えます。
