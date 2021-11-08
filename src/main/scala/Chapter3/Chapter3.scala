@@ -1468,7 +1468,7 @@ object chapter35 {
       import Chapter3.chapter34.chapter345.chapter3452.Film
       object Dad {
         def rate(film: Film): Double = {
-          film.director match {
+          film.director.name match {
             case "Clint Eastwood" => 10.0
             case "John McTiernan" => 7.0
             case _                => 3.0
