@@ -2203,7 +2203,7 @@ object chapter46 {
 //          }
 //        }
 //      }
-//      final case class Leaf(elt: Int) extends Tree {
+      sealed trait Expression
 //        def sum: Int = elt
 //        override def double: Tree = Leaf(elt * 2)
 //      }
